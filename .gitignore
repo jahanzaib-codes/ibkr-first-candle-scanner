@@ -81,3 +81,11 @@ request/
 
 # Docs (if empty)
 docs/
+
+# Archives and documents
+*.zip
+*.rar
+*.7z
+*.pdf
+*.doc
+*.docx
