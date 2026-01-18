@@ -311,7 +311,7 @@ class ConnectionDialog(ctk.CTkToplevel):
         super().__init__(parent)
         
         self.title("IBKR Connection")
-        self.geometry("400x300")
+        self.geometry("400x380")
         self.resizable(False, False)
         
         self.host = "127.0.0.1"
@@ -856,6 +856,11 @@ class ScannerGUI(ctk.CTk):
         self.manual_scan_btn.configure(state="disabled")
         
         def scan():
+            import asyncio
+            # Create event loop for this thread
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
             results = self.scanner.run_scan()
             self.after(0, lambda: self.manual_scan_btn.configure(state="normal"))
         

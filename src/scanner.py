@@ -160,6 +160,13 @@ class IBKRScanner:
             True if connected successfully, False otherwise
         """
         try:
+            # Create new event loop for this thread if needed
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            
             self.ib = IB()
             self.ib.connect(self.host, self.port, clientId=self.client_id)
             self.connected = True
@@ -546,17 +553,22 @@ class IBKRScanner:
         self._running = True
         
         def monitor_loop():
+            # Create event loop for this thread
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            import time
             while self._running:
                 if self._is_market_open():
                     self.run_scan()
                 else:
                     logger.info("Market is closed")
                 
-                # Wait for next interval
+                # Wait for next interval using time.sleep instead of ib.sleep
                 for _ in range(interval_seconds):
                     if not self._running:
                         break
-                    self.ib.sleep(1)
+                    time.sleep(1)
         
         self._scan_thread = threading.Thread(target=monitor_loop, daemon=True)
         self._scan_thread.start()
